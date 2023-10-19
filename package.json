@@ -1,0 +1,44 @@
+{
+  "name": "@gccunha015/services-core-library",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "npx jest",
+    "test:dev": "npx jest --watch --verbose --maxWorkers 1",
+    "test:coverage": "npx jest --coverage",
+    "test:coverage:clean": "npm run test:coverage; npm run clean:coverage",
+    "dev": "npx nodemon src/index.ts",
+    "build": "npx tsc -p tsconfig.build.json",
+    "start": "node lib/index.js",
+    "build:start": "npm run build && npm start",
+    "clean": "npm run clean:lib; npm run clean:coverage",
+    "clean:lib": "rm -fr lib",
+    "clean:coverage": "rm -fr coverage",
+    "clean:build": "npm run clean:lib; npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@gccunha015/express-errors-handler": "^1.0.0",
+    "@gccunha015/process-events-handler": "^1.0.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "http-status-codes": "^2.2.0",
+    "mongodb": "^6.0.0",
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.4",
+    "jest": "^29.6.3",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
