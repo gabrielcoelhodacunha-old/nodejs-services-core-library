@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { UUID } from "mongodb";
 import { z } from "zod";
 
+export const numberParser = z.number({ coerce: true });
 export const uuidParser = z.string().uuid().default(randomUUID);
 export const mongoUuidParser = z
   .custom<UUID>(
