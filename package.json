@@ -1,6 +1,9 @@
 {
   "name": "@gccunha015/services-core-library",
   "version": "1.0.0",
+  "files": [
+    "lib"
+  ],
   "main": "lib/index.js",
   "engines": {
     "node": ">=18"
@@ -10,10 +13,7 @@
     "test:dev": "npx jest --watch --verbose --maxWorkers 1",
     "test:coverage": "npx jest --coverage",
     "test:coverage:clean": "npm run test:coverage; npm run clean:coverage",
-    "dev": "npx nodemon src/index.ts",
     "build": "npx tsc -p tsconfig.build.json",
-    "start": "node lib/index.js",
-    "build:start": "npm run build && npm start",
     "clean": "npm run clean:lib; npm run clean:coverage",
     "clean:lib": "rm -fr lib",
     "clean:coverage": "rm -fr coverage",

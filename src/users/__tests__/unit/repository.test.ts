@@ -1,14 +1,14 @@
 import { AbstractCursor, Collection, UUID } from "mongodb";
 import { User, FindUserFilter } from "../../types";
 import { UserNotFoundError } from "../../errors";
-import { UsersMongoRepository } from "../../repositories";
+import { UsersRepository } from "../../repository";
 
-describe("Unit Testing | UsersMongoRepository", () => {
+describe("Unit Testing | UsersRepository", () => {
   const spies = {} as {
     abstractCursor: jest.MockedObject<AbstractCursor<User>>;
     entities: jest.MockedObject<Collection<User>>;
   };
-  const sut = {} as { repository: UsersMongoRepository };
+  const sut = {} as { repository: UsersRepository };
 
   beforeAll(() => {
     spies.abstractCursor = {
@@ -18,10 +18,10 @@ describe("Unit Testing | UsersMongoRepository", () => {
       insertOne: jest.fn(),
       find: jest.fn().mockImplementation(() => spies.abstractCursor),
     } as jest.MockedObject<Collection<User>>;
-    sut.repository = new UsersMongoRepository({ entities: spies.entities });
+    sut.repository = new UsersRepository({ entities: spies.entities });
   });
 
-  describe(`feature: insert new user`, () => {
+  describe(`feature: insert user`, () => {
     describe("scenario: insert is sucessful", () => {
       it(`given new user is valid
           when I try to insert the user to the database
@@ -63,7 +63,7 @@ describe("Unit Testing | UsersMongoRepository", () => {
     ];
 
     describe("scenario: find is sucessful", () => {
-      function getTestDescription(filter: string) {
+      function getTestDescription(filter: string): string {
         let description = "given ";
         description += filter
           ? `${filter} matches users in database`
@@ -75,17 +75,17 @@ describe("Unit Testing | UsersMongoRepository", () => {
         return description;
       }
 
-      const expected: User[][] = [
-        [findUserFilter[1], findUserFilter[2], findUserFilter[3]] as User[],
-        [findUserFilter[1]] as User[],
-        [findUserFilter[2]] as User[],
-        [findUserFilter[3]] as User[],
+      const expected = [
+        [findUserFilter[1], findUserFilter[2], findUserFilter[3]],
+        [findUserFilter[1]],
+        [findUserFilter[2]],
+        [findUserFilter[3]],
       ];
 
       const cases = filters.map((_filter, idx) => ({
         description: getTestDescription(_filter),
         filter: findUserFilter[idx],
-        expected: expected[idx],
+        expected: expected[idx] as User[],
       }));
 
       it.each(cases)(

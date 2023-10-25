@@ -1,9 +1,4 @@
-import { IRepository } from "./interfaces";
+import { z } from "zod";
+import { envParser } from "./parsers";
 
-export type IRepositoryOptions = {
-  entities: any;
-};
-
-export type IServiceOptions<I_REPOSITORY extends IRepository> = {
-  repository: I_REPOSITORY;
-};
+export type Env = z.infer<typeof envParser>;
