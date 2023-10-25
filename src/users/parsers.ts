@@ -18,7 +18,7 @@ export const userResponseParser = userParser.transform(
   })
 );
 
-export const createUserRequestParser = userParser
+export const insertUserRequestParser = userParser
   .pick({
     email: true,
     password: true,
@@ -30,4 +30,10 @@ export const createUserRequestParser = userParser
 
 export const findUserFilterParser = userParser
   .pick({ external_id: true, email: true })
-  .partial();
+  .partial()
+  .transform(
+    ({ external_id: id, ...rest }) =>
+      ({ id: id?.toHexString(), ...rest } as Partial<
+        { id: string } & typeof rest
+      >)
+  );

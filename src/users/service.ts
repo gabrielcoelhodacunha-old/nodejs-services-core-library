@@ -1,38 +1,45 @@
+import { UserExistsError, UserNotFoundError } from "./errors";
 import {
-  CreateUserRequest,
-  FindUserFilter,
+  IUserParser,
+  IUserResponseParser,
   IUsersRepository,
   IUsersService,
   IUsersServiceOptions,
-  User,
-  UserExistsError,
-  UserNotFoundError,
-  UserResponse,
-  userParser,
-  userResponseParser,
-} from "../types";
+} from "./interfaces";
+import { userParser, userResponseParser } from "./parsers";
 import { usersRepository } from "./repository";
+import { InsertUserRequest, FindUserFilter, User, UserResponse } from "./types";
 
 export class UsersService implements IUsersService {
   private readonly _repository: IUsersRepository;
+  private readonly _userParser: IUserParser;
+  private readonly _userResponseParser: IUserResponseParser;
 
   constructor(
-    { repository }: IUsersServiceOptions = { repository: usersRepository }
+    { repository, entityParser, entityResponseParser }: IUsersServiceOptions = {
+      repository: usersRepository,
+      entityParser: userParser,
+      entityResponseParser: userResponseParser,
+    }
   ) {
     this._repository = repository;
+    this._userParser = entityParser;
+    this._userResponseParser = entityResponseParser;
   }
 
-  async create({ email, ...rest }: CreateUserRequest): Promise<UserResponse> {
-    await this._find({ email }).then((user) => {
-      if (user) throw new UserExistsError(email);
+  async insert({ email, ...rest }: InsertUserRequest): Promise<UserResponse> {
+    await this.find({ email }).then((users) => {
+      if (users) throw new UserExistsError(email);
     });
-    await userParser
+    await this._userParser
       .parseAsync({ email, ...rest })
-      .then(async (user) => await this._repository.create(user));
-    return this._find({ email }).then(userResponseParser.parseAsync);
+      .then(async (user) => await this._repository.insert(user));
+    return await this.find({ email }).then(
+      async (users) => await this._userResponseParser.parseAsync(users?.[0])
+    );
   }
 
-  private async _find(filter: FindUserFilter): Promise<User | null> {
+  async find(filter: FindUserFilter): Promise<User[] | null> {
     try {
       return await this._repository.find(filter);
     } catch (error) {
@@ -40,6 +47,9 @@ export class UsersService implements IUsersService {
       return null;
     }
   }
+
+  async update(entity: any): Promise<any> {}
+  async delete(entity: any): Promise<any> {}
 }
 
 export const usersService = new UsersService();
