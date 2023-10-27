@@ -13,7 +13,8 @@
     "rootDir": "./src/",
     "paths": {
       "@users": ["users/*"]
-    }
+    },
+    "declaration": true
   },
   "ts-node": { "transpileOnly": true },
   "exclude": ["jest.config.ts", "./jest/*"]

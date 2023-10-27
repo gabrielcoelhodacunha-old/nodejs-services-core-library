@@ -1,24 +1,23 @@
-import type {
-  IUserParser,
+import { UserExistsError, UserNotFoundError } from "../errors";
+import { IUserModelParser, userModelParser } from "../model";
+import { IUsersRepository, usersRepository } from "../repository";
+import type { FindUserRequest, InsertUserRequest } from "../requests";
+import {
   IUserResponseParser,
-  IUsersRepository,
-  IUsersService,
-  IUsersServiceOptions,
-} from "./interfaces";
-import type { InsertUserRequest, FindUserFilter, UserResponse } from "./types";
-import { UserExistsError, UserNotFoundError } from "./errors";
-import { userParser, userResponseParser } from "./parsers";
-import { usersRepository } from "./repository";
+  UserResponse,
+  userResponseParser,
+} from "../response";
+import type { IUsersService, IUsersServiceOptions } from "./IUsersService";
 
 export class UsersService implements IUsersService {
   private readonly _repository: IUsersRepository;
-  private readonly _userParser: IUserParser;
+  private readonly _userParser: IUserModelParser;
   private readonly _userResponseParser: IUserResponseParser;
 
   constructor(
     { repository, entityParser, entityResponseParser }: IUsersServiceOptions = {
       repository: usersRepository,
-      entityParser: userParser,
+      entityParser: userModelParser,
       entityResponseParser: userResponseParser,
     }
   ) {
@@ -37,13 +36,13 @@ export class UsersService implements IUsersService {
     return (await this.find({ email }))[0];
   }
 
-  async find(filter: FindUserFilter): Promise<UserResponse[]> {
+  async find(filter: FindUserRequest): Promise<UserResponse[]> {
     const users = await this._find(filter);
     if (!users) throw new UserNotFoundError();
     return users;
   }
 
-  private async _find(filter: FindUserFilter): Promise<UserResponse[] | null> {
+  private async _find(filter: FindUserRequest): Promise<UserResponse[] | null> {
     try {
       return await this._repository
         .find(filter)

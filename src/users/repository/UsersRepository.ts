@@ -1,27 +1,31 @@
 import { Collection, UUID } from "mongodb";
-import { mongoDatabase } from "../utils";
-import type { FindUserFilter, User } from "./types";
-import type { IUsersRepository, IUsersRepositoryOptions } from "./interfaces";
-import { UserNotFoundError } from "./errors";
+import { mongoDatabase } from "../../utils";
+import { UserNotFoundError } from "../errors";
+import type { UserModel } from "../model";
+import type { FindUserRequest } from "../requests";
+import type {
+  IUsersRepository,
+  IUsersRepositoryOptions,
+} from "./IUsersRepository";
 
 export class UsersRepository implements IUsersRepository {
-  private readonly _entities: Collection<User>;
+  private readonly _entities: Collection<UserModel>;
 
   constructor(
     { entities }: IUsersRepositoryOptions = {
-      entities: mongoDatabase.collection<User>("users"),
+      entities: mongoDatabase.collection<UserModel>("users"),
     }
   ) {
     this._entities = entities;
   }
 
-  async insert(newUser: User): Promise<void> {
+  async insert(newUser: UserModel): Promise<void> {
     await this._entities.insertOne(newUser);
   }
 
-  async find({ id, ...rest }: FindUserFilter): Promise<User[]> {
+  async find({ id, ...rest }: FindUserRequest): Promise<UserModel[]> {
     const user = await this._entities
-      .find<User>(
+      .find<UserModel>(
         { external_id: id ? new UUID(id) : undefined, ...rest },
         { projection: { _id: 0 } }
       )

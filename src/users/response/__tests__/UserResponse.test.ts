@@ -1,13 +1,13 @@
 import { UUID } from "mongodb";
-import type { User, UserResponse } from "../types";
-import { transformUserResponse } from "./functions";
+import type { UserModel } from "../../model";
+import { UserResponse, transformUserResponse } from "../UserResponse";
 
-describe("Unit Testing | ", () => {
+describe("Unit Testing | UserResponse", () => {
   describe("transformUserResponse", () => {
     it(`given input is valid
-      when I try to transform it
-      then I should return the transformed data`, async () => {
-      let input: User;
+        when I try to transform it
+        then I should return the transformed data`, async () => {
+      let input: UserModel;
       let expected: UserResponse;
       async function arrange() {
         input = {
