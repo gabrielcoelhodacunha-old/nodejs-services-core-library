@@ -1,31 +1,27 @@
-import {
+import type {
   IParser,
   IRepository,
   IRepositoryOptions,
   IService,
   IServiceOptions,
 } from "../utils";
-import { InsertUserRequest, User, UserResponse, FindUserFilter } from "./types";
+import type {
+  IUserParserTypes,
+  IUserResponseParserTypes,
+  IUsersRepositoryTypes,
+  IUsersRepositoryOptionsTypes,
+  IUsersServiceTypes,
+  IUsersServiceOptionsTypes,
+} from "./types";
 
-export interface IUserParser extends IParser {
-  parseAsync: (data: any) => Promise<User>;
-}
-export interface IUserResponseParser extends IParser {
-  parseAsync: (data: any) => Promise<UserResponse>;
-}
+export interface IUserParser extends IParser<IUserParserTypes> {}
+export interface IUserResponseParser
+  extends IParser<IUserResponseParserTypes> {}
 
-export interface IUsersRepository extends IRepository {
-  insert: (newUser: User) => Promise<void>;
-  find: (filter: FindUserFilter) => Promise<User[]>;
-}
-export interface IUsersRepositoryOptions extends IRepositoryOptions {}
+export interface IUsersRepository extends IRepository<IUsersRepositoryTypes> {}
+export interface IUsersRepositoryOptions
+  extends IRepositoryOptions<IUsersRepositoryOptionsTypes> {}
 
-export interface IUsersService extends IService {
-  insert: (newUser: InsertUserRequest) => Promise<UserResponse>;
-  find: (filter: FindUserFilter) => Promise<User[] | null>;
-}
-export interface IUsersServiceOptions extends IServiceOptions {
-  repository: IUsersRepository;
-  entityParser: IUserParser;
-  entityResponseParser: IUserResponseParser;
-}
+export interface IUsersService extends IService<IUsersServiceTypes> {}
+export interface IUsersServiceOptions
+  extends IServiceOptions<IUsersServiceOptionsTypes> {}

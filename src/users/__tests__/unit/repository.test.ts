@@ -1,5 +1,5 @@
 import { AbstractCursor, Collection, UUID } from "mongodb";
-import { User, FindUserFilter } from "../../types";
+import type { User, FindUserFilter } from "../../types";
 import { UserNotFoundError } from "../../errors";
 import { UsersRepository } from "../../repository";
 
@@ -52,14 +52,15 @@ describe("Unit Testing | UsersRepository", () => {
   });
 
   describe(`feature: find users`, () => {
-    const external_id = new UUID();
+    const uuid = new UUID();
+    const id = uuid.toHexString();
     const email = "test@test.com";
     const filters = ["", "external id", "email", "external id and email"];
     const findUserFilter: FindUserFilter[] = [
       {},
-      { external_id },
+      { id },
       { email },
-      { external_id, email },
+      { id, email },
     ];
 
     describe("scenario: find is sucessful", () => {

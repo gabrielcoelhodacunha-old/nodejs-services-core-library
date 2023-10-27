@@ -1,8 +1,8 @@
-import { Collection } from "mongodb";
+import { Collection, UUID } from "mongodb";
 import { mongoDatabase } from "../utils";
+import type { FindUserFilter, User } from "./types";
+import type { IUsersRepository, IUsersRepositoryOptions } from "./interfaces";
 import { UserNotFoundError } from "./errors";
-import { FindUserFilter, User } from "./types";
-import { IUsersRepository, IUsersRepositoryOptions } from "./interfaces";
 
 export class UsersRepository implements IUsersRepository {
   private readonly _entities: Collection<User>;
@@ -19,16 +19,19 @@ export class UsersRepository implements IUsersRepository {
     await this._entities.insertOne(newUser);
   }
 
-  async find({id, ...rest}: FindUserFilter): Promise<User[]> {
+  async find({ id, ...rest }: FindUserFilter): Promise<User[]> {
     const user = await this._entities
-      .find<User>({external_id: }, { projection: { _id: 0 } })
+      .find<User>(
+        { external_id: id ? new UUID(id) : undefined, ...rest },
+        { projection: { _id: 0 } }
+      )
       .toArray();
     if (!user.length) throw new UserNotFoundError();
     return user;
   }
 
-  async update(entity: any): Promise<any> {}
-  async delete(entity: any): Promise<any> {}
+  async update(): Promise<void> {}
+  async delete(): Promise<void> {}
 }
 
 export const usersRepository = new UsersRepository();
