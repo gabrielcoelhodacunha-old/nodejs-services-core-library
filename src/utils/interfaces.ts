@@ -1,25 +1,40 @@
-interface IRead {
-  find: (filter: any) => Promise<any>;
+import type {
+  IParserTypes,
+  IReadTypes,
+  IRepositoryOptionsTypes,
+  IRepositoryTypes,
+  IServiceOptionsTypes,
+  IServiceTypes,
+  IWriteTypes,
+} from "./types";
+
+interface IRead<TYPES extends IReadTypes> {
+  find: TYPES["find"];
 }
 
-interface IWrite {
-  insert: (newEntity: any) => Promise<any>;
-  update: (entity: any) => Promise<any>;
-  delete: (filter: any) => Promise<any>;
+interface IWrite<TYPES extends IWriteTypes> {
+  insert: TYPES["insert"];
+  update: TYPES["update"];
+  delete: TYPES["delete"];
 }
 
-export interface IParser {
-  parseAsync: (data: any) => Promise<any>;
+export interface IParser<TYPES extends IParserTypes> {
+  parseAsync: TYPES["parseAsync"];
 }
 
-export interface IRepository extends IRead, IWrite {}
-export interface IRepositoryOptions {
-  entities: any;
+export interface IRepository<TYPES extends IRepositoryTypes>
+  extends IRead<TYPES>,
+    IWrite<TYPES> {}
+
+export interface IRepositoryOptions<TYPES extends IRepositoryOptionsTypes> {
+  entities: TYPES["entities"];
 }
 
-export interface IService extends IRead, IWrite {}
-export interface IServiceOptions {
-  repository: IRepository;
-  entityParser: IParser;
-  entityResponseParser: IParser;
+export interface IService<TYPES extends IServiceTypes>
+  extends IRepository<TYPES> {}
+
+export interface IServiceOptions<TYPES extends IServiceOptionsTypes> {
+  repository: TYPES["repository"];
+  entityParser: TYPES["entityParser"];
+  entityResponseParser: TYPES["entityResponseParser"];
 }

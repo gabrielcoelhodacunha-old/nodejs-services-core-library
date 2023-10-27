@@ -1,10 +1,11 @@
-import {
+import { randomUUID } from "node:crypto";
+import type {
   InsertUserRequest,
   FindUserFilter,
   User,
   UserResponse,
 } from "../../types";
-import {
+import type {
   IUserParser,
   IUserResponseParser,
   IUsersRepository,
@@ -38,7 +39,6 @@ describe("Unit Testing | UsersService", () => {
     });
   });
 
-  /*
   describe(`feature: insert user`, () => {
     const featureSpies = {} as {
       service: { find: jest.SpyInstance };
@@ -68,10 +68,9 @@ describe("Unit Testing | UsersService", () => {
           };
           user = newUser as User;
           expected = newUser as UserResponse;
-          featureSpies.service.find.mockResolvedValueOnce(null);
+          spies.repository.find.mockRejectedValueOnce(new UserNotFoundError());
           spies.userParser.parseAsync.mockResolvedValueOnce(user);
           featureSpies.service.find.mockResolvedValueOnce([user]);
-          spies.userResponseParser.parseAsync.mockResolvedValueOnce(expected);
         }
         async function act() {
           try {
@@ -100,7 +99,7 @@ describe("Unit Testing | UsersService", () => {
             password: "password",
           };
           user = newUser as User;
-          featureSpies.service.find.mockResolvedValueOnce([user]);
+          spies.repository.find.mockResolvedValueOnce([user]);
         }
         async function act() {
           try {
@@ -115,26 +114,52 @@ describe("Unit Testing | UsersService", () => {
 
         await arrange().then(act).then(assert);
       });
+
+      it(`given unexpected error occurs in _find
+          when I try to insert the user
+          then the unexpected error should be thrown`, async () => {
+        let newUser: InsertUserRequest;
+        let expected: Error;
+        async function arrange() {
+          newUser = {
+            email: "test@test.com",
+            password: "password",
+          };
+          expected = new Error("unexpected error");
+          spies.repository.find.mockRejectedValueOnce(expected);
+        }
+        async function act() {
+          try {
+            return await sut.service.insert(newUser);
+          } catch (error) {
+            return error;
+          }
+        }
+        async function assert(actResult: unknown) {
+          expect(actResult).toBe(expected);
+        }
+
+        await arrange().then(act).then(assert);
+      });
     });
   });
-  */
 
   describe(`feature: find users`, () => {
-    const external_id = new UUID();
+    const id = randomUUID();
     const email = "test@test.com";
     const filters = ["", "external id", "email", "external id and email"];
     const findUserFilter: FindUserFilter[] = [
       {},
-      { external_id },
+      { id },
       { email },
-      { external_id, email },
+      { id, email },
     ];
 
     describe("scenario: find is sucessful", () => {
       function getTestDescription(filter: string): string {
         let description = "given ";
         description += filter
-          ? `${filter} matches users in database`
+          ? `${filter} matches users`
           : "no filter is provided";
         description += `
           when I try to find users
@@ -143,7 +168,7 @@ describe("Unit Testing | UsersService", () => {
         return description;
       }
 
-      const expected = [
+      const users = [
         [findUserFilter[1], findUserFilter[2], findUserFilter[3]],
         [findUserFilter[1]],
         [findUserFilter[2]],
@@ -153,18 +178,24 @@ describe("Unit Testing | UsersService", () => {
       const cases = filters.map((_filter, idx) => ({
         description: getTestDescription(_filter),
         filter: findUserFilter[idx],
-        expected: expected[idx] as User[],
+        users: users[idx] as User[],
+        expected: users[idx] as UserResponse[],
       }));
 
       it.each(cases)(
         "$description",
-        async ({ filter, expected }: (typeof cases)[0]) => {
+        async ({ filter, users, expected }: (typeof cases)[0]) => {
           async function arrange() {
-            spies.abstractCursor.toArray.mockResolvedValueOnce(expected);
+            spies.repository.find.mockResolvedValueOnce(users);
+            expected.forEach((userResponse) =>
+              spies.userResponseParser.parseAsync.mockResolvedValueOnce(
+                userResponse
+              )
+            );
           }
           async function act() {
             try {
-              return await sut.repository.find(filter);
+              return await sut.service.find(filter);
             } catch (error) {
               return error;
             }
@@ -184,7 +215,7 @@ describe("Unit Testing | UsersService", () => {
         description += filter
           ? `${filter} doesn't belong to user in database`
           : `no filter is provided
-            and there are no users in the database`;
+            and there are no users`;
         description += `
           when I try to find users
           then the UserNotFoundError should be thrown`;
@@ -198,11 +229,11 @@ describe("Unit Testing | UsersService", () => {
 
       it.each(cases)("$description", async ({ filter }: (typeof cases)[0]) => {
         async function arrange() {
-          spies.abstractCursor.toArray.mockResolvedValueOnce([]);
+          spies.repository.find.mockRejectedValueOnce(new UserNotFoundError());
         }
         async function act() {
           try {
-            return await sut.repository.find(filter);
+            return await sut.service.find(filter);
           } catch (error) {
             return error;
           }
@@ -213,24 +244,18 @@ describe("Unit Testing | UsersService", () => {
 
         await arrange().then(act).then(assert);
       });
-    });
-  });
 
-  describe("feature: find users", () => {
-    describe("scenario: find results in error", () => {
-      it(`given an unexpected error occurs
+      it(`given unexpected error occurs in _find
           when I try to find users
           then the unexpected error should be thrown`, async () => {
-        let filter: FindUserFilter;
         let expected: Error;
         async function arrange() {
-          filter = { email: "test@test.com" };
-          expected = new Error("Unexpected error");
+          expected = new Error("unexpected error");
           spies.repository.find.mockRejectedValueOnce(expected);
         }
         async function act() {
           try {
-            return await sut.service.find(filter);
+            return await sut.service.find({});
           } catch (error) {
             return error;
           }
