@@ -1,21 +1,20 @@
 import { randomUUID } from "node:crypto";
-import type {
-  InsertUserRequest,
-  FindUserFilter,
-  User,
-  UserResponse,
-} from "../../types";
-import type {
-  IUserParser,
+import {
+  FindUserRequest,
+  IUserModelParser,
   IUserResponseParser,
   IUsersRepository,
-} from "../../interfaces";
-import { UserExistsError, UserNotFoundError } from "../../errors";
-import { UsersService } from "../../service";
+  InsertUserRequest,
+  UserExistsError,
+  UserModel,
+  UserNotFoundError,
+  UserResponse,
+} from "../..";
+import { UsersService } from "../UsersService";
 
 describe("Unit Testing | UsersService", () => {
   const spies = {} as {
-    userParser: jest.MockedObject<IUserParser>;
+    userParser: jest.MockedObject<IUserModelParser>;
     userResponseParser: jest.MockedObject<IUserResponseParser>;
     repository: jest.MockedObject<IUsersRepository>;
   };
@@ -24,7 +23,7 @@ describe("Unit Testing | UsersService", () => {
   beforeAll(() => {
     spies.userParser = {
       parseAsync: jest.fn(),
-    } as jest.MockedObject<IUserParser>;
+    } as jest.MockedObject<IUserModelParser>;
     spies.userResponseParser = {
       parseAsync: jest.fn(),
     } as jest.MockedObject<IUserResponseParser>;
@@ -59,14 +58,14 @@ describe("Unit Testing | UsersService", () => {
           when I try to insert the user
           then I should insert it`, async () => {
         let newUser: InsertUserRequest;
-        let user: User;
+        let user: UserModel;
         let expected: UserResponse;
         async function arrange() {
           newUser = {
             email: "test@test.com",
             password: "password",
           };
-          user = newUser as User;
+          user = newUser as UserModel;
           expected = newUser as UserResponse;
           spies.repository.find.mockRejectedValueOnce(new UserNotFoundError());
           spies.userParser.parseAsync.mockResolvedValueOnce(user);
@@ -92,13 +91,13 @@ describe("Unit Testing | UsersService", () => {
           when I try to insert the user
           then the UserExistsError should be thrown`, async () => {
         let newUser: InsertUserRequest;
-        let user: User;
+        let user: UserModel;
         async function arrange() {
           newUser = {
             email: "test@test.com",
             password: "password",
           };
-          user = newUser as User;
+          user = newUser as UserModel;
           spies.repository.find.mockResolvedValueOnce([user]);
         }
         async function act() {
@@ -148,12 +147,7 @@ describe("Unit Testing | UsersService", () => {
     const id = randomUUID();
     const email = "test@test.com";
     const filters = ["", "external id", "email", "external id and email"];
-    const findUserFilter: FindUserFilter[] = [
-      {},
-      { id },
-      { email },
-      { id, email },
-    ];
+    const requests: FindUserRequest[] = [{}, { id }, { email }, { id, email }];
 
     describe("scenario: find is sucessful", () => {
       function getTestDescription(filter: string): string {
@@ -169,16 +163,16 @@ describe("Unit Testing | UsersService", () => {
       }
 
       const users = [
-        [findUserFilter[1], findUserFilter[2], findUserFilter[3]],
-        [findUserFilter[1]],
-        [findUserFilter[2]],
-        [findUserFilter[3]],
+        [requests[1], requests[2], requests[3]],
+        [requests[1]],
+        [requests[2]],
+        [requests[3]],
       ];
 
       const cases = filters.map((_filter, idx) => ({
         description: getTestDescription(_filter),
-        filter: findUserFilter[idx],
-        users: users[idx] as User[],
+        filter: requests[idx],
+        users: users[idx] as UserModel[],
         expected: users[idx] as UserResponse[],
       }));
 
@@ -224,7 +218,7 @@ describe("Unit Testing | UsersService", () => {
 
       const cases = filters.map((_filter, idx) => ({
         description: getTestDescription(_filter),
-        filter: findUserFilter[idx],
+        filter: requests[idx],
       }));
 
       it.each(cases)("$description", async ({ filter }: (typeof cases)[0]) => {

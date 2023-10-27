@@ -1,23 +1,22 @@
 import { AbstractCursor, Collection, UUID } from "mongodb";
-import type { User, FindUserFilter } from "../../types";
-import { UserNotFoundError } from "../../errors";
-import { UsersRepository } from "../../repository";
+import { FindUserRequest, UserModel, UserNotFoundError } from "../..";
+import { UsersRepository } from "../UsersRepository";
 
 describe("Unit Testing | UsersRepository", () => {
   const spies = {} as {
-    abstractCursor: jest.MockedObject<AbstractCursor<User>>;
-    entities: jest.MockedObject<Collection<User>>;
+    abstractCursor: jest.MockedObject<AbstractCursor<UserModel>>;
+    entities: jest.MockedObject<Collection<UserModel>>;
   };
   const sut = {} as { repository: UsersRepository };
 
   beforeAll(() => {
     spies.abstractCursor = {
       toArray: jest.fn(),
-    } as jest.MockedObject<AbstractCursor<User>>;
+    } as jest.MockedObject<AbstractCursor<UserModel>>;
     spies.entities = {
       insertOne: jest.fn(),
       find: jest.fn().mockImplementation(() => spies.abstractCursor),
-    } as jest.MockedObject<Collection<User>>;
+    } as jest.MockedObject<Collection<UserModel>>;
     sut.repository = new UsersRepository({ entities: spies.entities });
   });
 
@@ -26,7 +25,7 @@ describe("Unit Testing | UsersRepository", () => {
       it(`given new user is valid
           when I try to insert the user to the database
           then I should insert it`, async () => {
-        let newUser: User;
+        let newUser: UserModel;
         async function arrange() {
           newUser = {
             external_id: new UUID(),
@@ -56,12 +55,7 @@ describe("Unit Testing | UsersRepository", () => {
     const id = uuid.toHexString();
     const email = "test@test.com";
     const filters = ["", "external id", "email", "external id and email"];
-    const findUserFilter: FindUserFilter[] = [
-      {},
-      { id },
-      { email },
-      { id, email },
-    ];
+    const requests: FindUserRequest[] = [{}, { id }, { email }, { id, email }];
 
     describe("scenario: find is sucessful", () => {
       function getTestDescription(filter: string): string {
@@ -77,16 +71,16 @@ describe("Unit Testing | UsersRepository", () => {
       }
 
       const expected = [
-        [findUserFilter[1], findUserFilter[2], findUserFilter[3]],
-        [findUserFilter[1]],
-        [findUserFilter[2]],
-        [findUserFilter[3]],
+        [requests[1], requests[2], requests[3]],
+        [requests[1]],
+        [requests[2]],
+        [requests[3]],
       ];
 
       const cases = filters.map((_filter, idx) => ({
         description: getTestDescription(_filter),
-        filter: findUserFilter[idx],
-        expected: expected[idx] as User[],
+        filter: requests[idx],
+        expected: expected[idx] as UserModel[],
       }));
 
       it.each(cases)(
@@ -126,7 +120,7 @@ describe("Unit Testing | UsersRepository", () => {
 
       const cases = filters.map((_filter, idx) => ({
         description: getTestDescription(_filter),
-        filter: findUserFilter[idx],
+        filter: requests[idx],
       }));
 
       it.each(cases)("$description", async ({ filter }: (typeof cases)[0]) => {
