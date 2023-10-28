@@ -5,8 +5,8 @@ export function transformFindUserRequest({
   external_id: id,
   ...rest
 }: Partial<Pick<UserModel, "external_id" | "email">>) {
-  const filter = { id: id?.toHexString(), ...rest };
-  return filter as Partial<typeof filter>;
+  const filter = id ? { id: id.toHexString(), ...rest } : rest;
+  return filter as Partial<{ id?: string } & typeof rest>;
 }
 
 export const findUserRequestParser = userModelParser
