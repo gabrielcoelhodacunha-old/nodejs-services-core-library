@@ -10,7 +10,6 @@ const config: Config.InitialOptions = {
   rootDir: ".",
   roots: ["src"],
   haste: { forceNodeFilesystemAPI: true, throwOnModuleCollision: true },
-  coveragePathIgnorePatterns: ["utils"],
   clearMocks: true,
 };
 

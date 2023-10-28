@@ -8,7 +8,7 @@ import type {
   IWriteTypes,
 } from "./types";
 
-interface IRead<TYPES extends IReadTypes> {
+export interface IRead<TYPES extends IReadTypes> {
   find: TYPES["find"];
 }
 

@@ -4,7 +4,6 @@
     "**/*.test.*",
     "**/__mocks__/*",
     "**/__tests__/*",
-    "jest.config.ts",
-    "./jest/*"
+    "jest.config.ts"
   ]
 }
