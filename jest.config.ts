@@ -11,6 +11,7 @@ const config: Config.InitialOptions = {
   roots: ["src"],
   haste: { forceNodeFilesystemAPI: true, throwOnModuleCollision: true },
   clearMocks: true,
+  testRegex: "(/__tests__/.*|(\\.|/))\\.test.ts$",
 };
 
 export default config;
