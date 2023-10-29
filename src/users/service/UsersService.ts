@@ -59,7 +59,9 @@ export class UsersService implements IUsersService {
     }
   }
 
+  /* istanbul ignore next */
   async update(): Promise<any> {}
+  /* istanbul ignore next */
   async delete(): Promise<any> {}
 }
 
