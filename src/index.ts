@@ -1,3 +1,3 @@
 export * from "./mongodb";
-export * from "./utils";
+export * from "./users";
 export * from "./utils";
