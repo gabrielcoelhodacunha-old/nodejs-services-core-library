@@ -46,12 +46,13 @@ export class UsersService implements IUsersService {
     try {
       return await this._repository
         .find(filter)
-        .then((users) =>
-          Promise.all(
-            users.map(
-              async (user) => await this._userResponseParser.parseAsync(user)
+        .then(
+          async (users) =>
+            await Promise.all(
+              users.map(
+                async (user) => await this._userResponseParser.parseAsync(user)
+              )
             )
-          )
         );
     } catch (error) {
       if (!(error instanceof UserNotFoundError)) throw error;
