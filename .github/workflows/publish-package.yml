@@ -19,7 +19,7 @@ jobs:
       - name: install dependencies
         run: npm ci
         env:
-          GPR_READ_TOKEN: ${{secrets.GPR_READ_TOKEN}}
+          GPR_TOKEN: ${{secrets.GPR_READ_TOKEN}}
       - name: test
         run: npm test
       - name: build
@@ -27,4 +27,4 @@ jobs:
       - name: publish
         run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GPR_TOKEN: ${{secrets.GITHUB_TOKEN}}
