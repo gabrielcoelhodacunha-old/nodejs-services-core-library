@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { dateParser, emailParser, mongoUuidParser } from "../../utils";
+import { mongoUuidParser } from "../../mongodb";
+import { dateParser, emailParser, stringParser } from "../../utils";
 
 export const userModelParser = z
   .object({
     external_id: mongoUuidParser,
     email: emailParser,
-    password: z.string().min(8),
+    password: stringParser.min(8),
     created_at: dateParser,
   })
   .strict();
