@@ -1,14 +1,9 @@
 import { genSalt, hash } from "bcrypt";
-import { UUID } from "mongodb";
 import { Env } from "./types";
 
 export async function hashString(str: string): Promise<string> {
   const salt = await genSalt();
   return await hash(str, salt);
-}
-
-export function isUUID(data: unknown): data is UUID {
-  return (data as UUID).toHexString !== undefined;
 }
 
 export function transformEnv(env: Env): Env {

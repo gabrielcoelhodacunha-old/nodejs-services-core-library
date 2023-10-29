@@ -1,5 +1,5 @@
 import { Collection, UUID } from "mongodb";
-import { mongoDatabase } from "../../utils";
+import { mongoDatabase } from "../../mongodb";
 import { UserNotFoundError } from "../errors";
 import type { UserModel } from "../model";
 import type { FindUserRequest } from "../requests";

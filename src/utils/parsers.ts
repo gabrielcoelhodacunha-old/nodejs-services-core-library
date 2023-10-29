@@ -1,28 +1,22 @@
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { UUID } from "mongodb";
-import { isUUID } from "./functions";
 
+export const stringParser = z.string();
 export const numberParser = z.number({ coerce: true });
-export const uuidParser = z.string().uuid().default(randomUUID);
-export const emailParser = z.string().email();
+export const uuidParser = stringParser.uuid().default(randomUUID);
+export const emailParser = stringParser.email();
 export const dateParser = z.date().default(new Date());
 
-export const mongoUuidParser = z.custom<UUID>(isUUID).default(
-  /* istanbul ignore next */
-  () => new UUID()
-);
-
 export const envParser = z.object({
-  APP_NAME: z.string().default(""),
-  PROTOCOL: z.string().default("http"),
-  HOST: z.string().default("localhost"),
+  APP_NAME: stringParser.default(""),
+  PROTOCOL: stringParser.default("http"),
+  HOST: stringParser.default("localhost"),
   PORT: numberParser.default(3000),
-  BASE_URL: z.string().default(""),
-  MONGO_USER: z.string().default("username"),
-  MONGO_PASSWORD: z.string().default("password"),
-  MONGO_HOST: z.string().default("localhost"),
+  BASE_URL: stringParser.default(""),
+  MONGO_USER: stringParser.default("username"),
+  MONGO_PASSWORD: stringParser.default("password"),
+  MONGO_HOST: stringParser.default("localhost"),
   MONGO_PORT: numberParser.default(27017),
-  MONGO_DATABASE: z.string().default("nodejs_services"),
-  MONGO_URI: z.string().default(""),
+  MONGO_DATABASE: stringParser.default("nodejs_services"),
+  MONGO_URI: stringParser.default(""),
 });
