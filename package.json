@@ -1,12 +1,16 @@
 {
   "name": "@gccunha015/services-core-library",
   "version": "1.0.0",
-  "files": [
-    "lib"
-  ],
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "/lib"
+  ],
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "@gccunha015:registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "test": "npx jest",
