@@ -18,6 +18,8 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - name: install dependencies
         run: npm ci
+        env:
+          GPR_READ_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: test
         run: npm test
       - name: build
