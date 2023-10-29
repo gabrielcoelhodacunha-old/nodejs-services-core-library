@@ -24,11 +24,9 @@ export class UsersRepository implements IUsersRepository {
   }
 
   async find({ id, ...rest }: FindUserRequest): Promise<UserModel[]> {
+    const filter = id ? { external_id: new UUID(id) } : rest;
     const users = await this._entities
-      .find<UserModel>(
-        { external_id: id ? new UUID(id) : undefined, ...rest },
-        { projection: { _id: 0 } }
-      )
+      .find<UserModel>(filter, { projection: { _id: 0 } })
       .toArray();
     if (!users.length) throw new UserNotFoundError();
     return users;
