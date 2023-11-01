@@ -1,5 +1,5 @@
 import { mongoDatabase, uuidBsonType } from "../mongodb";
-import { UserModel } from "./model";
+import type { UserModel } from "./model";
 
 mongoDatabase.createCollection<UserModel>("users", {
   validator: {
