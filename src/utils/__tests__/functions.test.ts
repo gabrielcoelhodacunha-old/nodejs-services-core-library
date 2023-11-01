@@ -56,17 +56,10 @@ describe("Unit Testing | utils | functions", () => {
           HOST: "localhost",
           PORT: 3000,
           BASE_URL: "",
-          MONGO_USER: "username",
-          MONGO_PASSWORD: "password",
-          MONGO_HOST: "localhost",
-          MONGO_PORT: 27017,
-          MONGO_DATABASE: "nodejs_services",
-          MONGO_URI: "",
         };
         expected = {
           ...input,
           BASE_URL: `${input.PROTOCOL}://${input.HOST}:${input.PORT}`,
-          MONGO_URI: `mongodb://${input.MONGO_USER}:${input.MONGO_PASSWORD}@${input.MONGO_HOST}:${input.MONGO_PORT}/${input.MONGO_DATABASE}`,
         };
       }
       async function act() {

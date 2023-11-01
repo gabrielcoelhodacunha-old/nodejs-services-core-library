@@ -10,6 +10,5 @@ export function transformEnv(env: Env): Env {
   return {
     ...env,
     BASE_URL: `${env.PROTOCOL}://${env.HOST}:${env.PORT}`,
-    MONGO_URI: `mongodb://${env.MONGO_USER}:${env.MONGO_PASSWORD}@${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DATABASE}`,
   };
 }

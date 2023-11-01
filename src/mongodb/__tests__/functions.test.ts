@@ -1,7 +1,44 @@
 import { UUID } from "mongodb";
-import { isUUID } from "../functions";
+import { isUUID, transformMongoEnv } from "../functions";
+import { MongoEnv } from "../types";
 
 describe("Unit Testing | mongodb | functions", () => {
+  describe("transformMongoEnv", () => {
+    it(`given input is valid
+        when I try to transform it
+        then I should transform it`, async () => {
+      let input: MongoEnv;
+      let expected: MongoEnv;
+      async function arrange() {
+        input = {
+          APP_NAME: "test",
+          MONGO_USER: "username",
+          MONGO_PASSWORD: "password",
+          MONGO_HOST: "localhost",
+          MONGO_PORT: 27017,
+          MONGO_DATABASE: "nodejs_services",
+          MONGO_URI: "",
+        };
+        expected = {
+          ...input,
+          MONGO_URI: `mongodb://${input.MONGO_USER}:${input.MONGO_PASSWORD}@${input.MONGO_HOST}:${input.MONGO_PORT}/${input.MONGO_DATABASE}`,
+        };
+      }
+      async function act() {
+        try {
+          return transformMongoEnv(input);
+        } catch (error) {
+          return error;
+        }
+      }
+      async function assert(actResult: unknown) {
+        expect(actResult).toStrictEqual<MongoEnv>(expected);
+      }
+
+      await arrange().then(act).then(assert);
+    });
+  });
+
   describe("isUUID", () => {
     function getDescription(expected: boolean) {
       let description = "given input is ";

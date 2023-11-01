@@ -13,10 +13,4 @@ export const envParser = z.object({
   HOST: stringParser.default("localhost"),
   PORT: numberParser.default(3000),
   BASE_URL: stringParser.default(""),
-  MONGO_USER: stringParser.default("username"),
-  MONGO_PASSWORD: stringParser.default("password"),
-  MONGO_HOST: stringParser.default("localhost"),
-  MONGO_PORT: numberParser.default(27017),
-  MONGO_DATABASE: stringParser.default("nodejs_services"),
-  MONGO_URI: stringParser.default(""),
 });

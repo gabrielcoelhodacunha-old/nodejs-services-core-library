@@ -1,8 +1,13 @@
 import { MongoClient } from "mongodb";
-import { env } from "../utils";
+import { mongoEnvParser } from "./parsers";
+import { transformMongoEnv } from "./functions";
 
-export const mongoClient = new MongoClient(env.MONGO_URI, {
-  appName: env.APP_NAME,
+export const mongoEnv = mongoEnvParser
+  .transform(transformMongoEnv)
+  .parse(process.env);
+
+export const mongoClient = new MongoClient(mongoEnv.MONGO_URI, {
+  appName: mongoEnv.APP_NAME,
   authSource: "admin",
 });
 
